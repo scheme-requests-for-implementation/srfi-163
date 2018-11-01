@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-    <title>Enhanced array literals</title>
+    <title>SRFI 163: Enhanced array literals</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="/srfi.css" type="text/css" />
     <link href="/favicon.png" rel="icon" sizes="192x192" type="image/png" />
@@ -36,23 +36,29 @@ Per Bothner
 
 <h1>Status</h1>
 
+<p>This SRFI is currently in <em>draft</em> status.  Here is <a href="https://srfi.schemers.org/srfi-process.html">an explanation</a> of each status that a SRFI can hold.  To provide input on this SRFI, please send email to <code><a href="mailto:srfi+minus+163+at+srfi+dotschemers+dot+org">srfi-163@<span class="antispam">nospam</span>srfi.schemers.org</a></code>.  To subscribe to the list, follow <a href="https://srfi.schemers.org/srfi-list-subscribe.html">these instructions</a>.  You can access previous messages via the mailing list <a href="https://srfi-email.schemers.org/srfi-163">archive</a>.</p>
+<ul>
+  <li>Received: 2018/10/30</li>
+  <li>60-day deadline: 2018/12/31</li>
+</ul>
+
 <h1>Abstract</h1>
 
 <p>This is a specification of a reader form (literals)
 for multi-dimensional arrays.
 It is an extension of the Common Lisp array reader syntax to handle
 non-zero lower bounds, optional explicit bounds,
-and optional uniform element types (compatible with <a href="https://srfi.schemers.org/srfi-4">SRFI-4</a>).
-It can be used in conjunction with <a href="https://srfi.schemers.org/srfi-25">SRFI-25</a> or <a href="https://srfi.schemers.org/srfi-122">SRFI-122</a>.
+and optional uniform element types (compatible with <a href="https://srfi.schemers.org/srfi-4">SRFI 4</a>).
+It can be used in conjunction with <a href="https://srfi.schemers.org/srfi-25">SRFI 25</a> or <a href="https://srfi.schemers.org/srfi-122">SRFI 122</a>.
 These extensions were implemented in Guile (except the handling of rank-0 arrays),
 and later in Kawa.
 
 <h1>Issues</h1>
-<p>Should the rank be optional if the bounds are specified? It is in SRFI-58.
+<p>Should the rank be optional if the bounds are specified? It is in SRFI 58.
 <p>Should <code>format-array</code> be here?</p>
 
 <p>The output of <code>format-array</code> starts out
-with <code>"&#x2554"</code> (box drawing double up and right) if there
+  with <code>"&#x2554;"</code> (Unicode <code><a href="https://www.unicode.org/charts/nameslist/n_2500.html">BOX DRAWINGS DOUBLE DOWN AND RIGHT</a></code>) if there
 is space, and otherwise it starts with <code>"#"</code>.  The former is
 prettier, but the latter makes it easier to actually parse the output.
 It might be nice (as a future or implementation extension) to
@@ -65,19 +71,19 @@ It is desirable to have a read and write syntax for multi-dimensional arrays.
 Basing it on the Common Lisp syntax makes sense, and is what has been done
 by all known existing implementations.
 However, Common Lisp arrays do not support non-zero lower bounds,
-and its handling of specialized (uniform) arrays is very different from known
+and Common Lisp's handling of specialized (uniform) arrays is very different from that of known
 Scheme implementations.
 Various Scheme extensions have been proposed.
-<a href="https://srfi.schemers.org/srfi-58">SRFI-58</a> is one proposal, but it does not handle non-zero lower bounds,
-and it's type-specifier syntax is verbose and stylistically
-incompatible with the literals proposed for uniform verctors in SRFI-4.
+<a href="https://srfi.schemers.org/srfi-58">SRFI 58</a> is one proposal, but it does not handle non-zero lower bounds,
+and its type-specifier syntax is verbose and stylistically
+incompatible with the literals proposed for uniform vectors in SRFI 4.
 <p>
 This specification is basically that of Guile.
 However, Guile requires the single element of rank-0 arrays
-to be enclosed in parenthesis. While this may slightly enhance readability,
+to be enclosed in parentheses. While this may slightly enhance readability,
 it is somewhat inconsistent in that otherwise the nesting of
-parenthesis (of atom-valued arrays) is equal to the rank.
-It is also inconsistent with Common Lisp and SRFI-58.
+parentheses (of atom-valued arrays) is equal to the rank.
+It is also inconsistent with Common Lisp and SRFI 58.
 So this specification (and the Kawa implementation) diverge
 from Guile in this respect.
 
@@ -105,7 +111,7 @@ helper function below):
 <a class="indexterm" name="idm45251523830384"></a><a name="meta-vectag"></a><em class="replaceable"><code>vectag</code></em> <code>::=</code> <code class="literal"><span class="bold"><strong>a</strong></span></code> | <a class="link" href="Uniform-vectors.html#meta-uniform-tag"><em class="replaceable"><code>uniform-tag</code></em></a><br>
 </p></div>
 <p>The <em class="replaceable"><code>vectag</code></em> specifies the type of the elements of the array.
-These are the same tags as <a href="https://srfi.schemers.org/srfi-4/srfi-4.html">SRFI-4</a>.  For example <code>#2u32((10 11) (20 21))</code>
+These are the same tags as <a href="https://srfi.schemers.org/srfi-4/srfi-4.html">SRFI 4</a>.  For example <code>#2u32((10 11) (20 21))</code>
 is a 2x2 array of 32-bit unsigned integers.
 </p>
 <p>Following the <em class="replaceable"><code>vectag</code></em> you can optionally include information
@@ -119,7 +125,7 @@ there must be exactly <em class="replaceable">rank</em> of them.
 </p>
 <p>The <a class="link" href="Datum-syntax.html#meta-datum"><em class="replaceable"><code>datum</code></em></a> contains the elements in a nested-list format:
 a rank-1 array (i.e. vector) uses a single list,
-a rank-2 array uses a list-of-lists, and so on.
+a rank-2 array uses a list of lists, and so on.
 The elements are in lexicographic order.
 </p>
 <p>A uniform u32 array of rank 2 with index ranges 2..3 and 3..4:
@@ -253,4 +259,4 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
 <hr>
-<address>Author: <a href="mailto:per@bothner.com">Per Bothner</a></address>
+<address>Editor: <a href="mailto:srfi-editors+at+srfi+dot+schemers+dot+org">Arthur A. Gleckler</a></address></body></html>
