@@ -1,0 +1,256 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Enhanced array literals</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/srfi.css" type="text/css" />
+    <link href="/favicon.png" rel="icon" sizes="192x192" type="image/png" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+  div.title h1 { font-size: small; color: blue }
+  div.title { font-size: xx-large; color: blue; font-weight: bold }
+  h1 { font-size: x-large; color: blue }
+  h2 { font-size: large; color: blue }
+  h3 { color: blue }
+  /* So var inside pre gets same font as var in paragraphs. */
+  var { font-family: monospace; }
+  em.non-terminal { }
+  em.non-termina-def { }
+  code.literal { font-style: normal; }
+  code.literal:before { content: "“" }
+  code.literal:after { content: "”" }
+  span.proc-def { font-weight: bold }
+  code.function { font-weight: bold }
+  p.synopsis { background-color: #D8ffD8 }
+</style>
+  </head>
+
+<body>
+<div class="title">
+<h1>Title</h1>
+Enhanced Array Literals
+</div>
+
+<h1>Author</h1>
+Per Bothner
+
+<h1>Status</h1>
+
+<h1>Abstract</h1>
+
+<p>This is a specification of a reader form (literals)
+for multi-dimensional arrays.
+It is an extension of the Common Lisp array reader syntax to handle
+non-zero lower bounds, optional explicit bounds,
+and optional uniform element types (compatible with <a href="https://srfi.schemers.org/srfi-4">SRFI-4</a>).
+It can be used in conjunction with <a href="https://srfi.schemers.org/srfi-25">SRFI-25</a> or <a href="https://srfi.schemers.org/srfi-122">SRFI-122</a>.
+These extensions were implemented in Guile (except the handling of rank-0 arrays),
+and later in Kawa.
+
+<h1>Issues</h1>
+<p>Should the rank be optional if the bounds are specified? It is in SRFI-58.
+<p>Should <code>format-array</code> be here?</p>
+
+<p>The output of <code>format-array</code> starts out
+with <code>"&#x2554"</code> (box drawing double up and right) if there
+is space, and otherwise it starts with <code>"#"</code>.  The former is
+prettier, but the latter makes it easier to actually parse the output.
+It might be nice (as a future or implementation extension) to
+be able to use the pretty box representation in a program, or otherwise
+execute it, and that is easier if the initial character is <code>"#"</code>.
+
+<h1>Rationale</h1>
+<p>
+It is desirable to have a read and write syntax for multi-dimensional arrays.
+Basing it on the Common Lisp syntax makes sense, and is what has been done
+by all known existing implementations.
+However, Common Lisp arrays do not support non-zero lower bounds,
+and its handling of specialized (uniform) arrays is very different from known
+Scheme implementations.
+Various Scheme extensions have been proposed.
+<a href="https://srfi.schemers.org/srfi-58">SRFI-58</a> is one proposal, but it does not handle non-zero lower bounds,
+and it's type-specifier syntax is verbose and stylistically
+incompatible with the literals proposed for uniform verctors in SRFI-4.
+<p>
+This specification is basically that of Guile.
+However, Guile requires the single element of rank-0 arrays
+to be enclosed in parenthesis. While this may slightly enhance readability,
+it is somewhat inconsistent in that otherwise the nesting of
+parenthesis (of atom-valued arrays) is equal to the rank.
+It is also inconsistent with Common Lisp and SRFI-58.
+So this specification (and the Kawa implementation) diverge
+from Guile in this respect.
+
+<h1>Specification</h1>
+<h2>Reader syntax</h2>
+<p>An array literal starts with <code class="literal">#</code> followed by its rank,
+followed by a tag that describes the underlying vector (by default <code class="literal">a</code>),
+optionally followed by information about its shape,
+and finally followed by the cells, organized into dimensions using parentheses.
+</p>
+<p>For example, <code class="literal">#2a((11 12 13) (21 22 23))</code> is a rank-2 array (a matrix)
+whose upper index bounds (shape) is <code class="literal">#(2 3)</code>.
+It could be pretty-printed (using the non-normative <code>format-array</code>
+helper function below):
+</p>
+<pre class="screen">╔#2a:2:3═╗
+║11│12│13║
+╟──┼──┼──╢
+║21│22│23║
+╚══╧══╧══╝
+</pre>
+<div class="literallayout"><p><a class="indexterm" name="idm45251523844304"></a><a name="meta-array-literal"></a><em class="replaceable"><code>array-literal</code></em> <code>::=</code> <a class="link" href="Arrays.html#meta-array-literal-header"><em class="replaceable"><code>array-literal-header</code></em></a> <a class="link" href="Datum-syntax.html#meta-datum"><em class="replaceable"><code>datum</code></em></a><br>
+<a class="indexterm" name="idm45251523840672"></a><a name="meta-array-literal-header"></a><em class="replaceable"><code>array-literal-header</code></em> <code>::=</code> <code class="literal"><span class="bold"><strong>#</strong></span></code> <em class="replaceable"><code>rank</code></em> <a class="link" href="Arrays.html#meta-vectag"><em class="replaceable"><code>vectag</code></em></a> <a class="link" href="Arrays.html#meta-array-bound"><em class="replaceable"><code>array-bound</code></em></a><sup>*</sup> <br>
+<a class="indexterm" name="idm45251523835584"></a><a name="meta-array-bound"></a><em class="replaceable"><code>array-bound</code></em> <code>::=</code> [<code class="literal"><span class="bold"><strong>@</strong></span></code><em class="replaceable"><code>lower</code></em>]<code class="literal"><span class="bold"><strong>:</strong></span></code><em class="replaceable"><code>length</code></em> | <code class="literal"><span class="bold"><strong>@</strong></span></code><em class="replaceable"><code>lower</code></em><br>
+<a class="indexterm" name="idm45251523830384"></a><a name="meta-vectag"></a><em class="replaceable"><code>vectag</code></em> <code>::=</code> <code class="literal"><span class="bold"><strong>a</strong></span></code> | <a class="link" href="Uniform-vectors.html#meta-uniform-tag"><em class="replaceable"><code>uniform-tag</code></em></a><br>
+</p></div>
+<p>The <em class="replaceable"><code>vectag</code></em> specifies the type of the elements of the array.
+These are the same tags as <a href="https://srfi.schemers.org/srfi-4/srfi-4.html">SRFI-4</a>.  For example <code>#2u32((10 11) (20 21))</code>
+is a 2x2 array of 32-bit unsigned integers.
+</p>
+<p>Following the <em class="replaceable"><code>vectag</code></em> you can optionally include information
+about the shape: For each dimension you can optionally specify
+the lower bounds (after the character <code class="literal">@</code>),
+followed by the length of the dimension (after the character <code class="literal">":"</code>).
+The shape information is required if a lower bound is non-zero,
+or any length is zero.
+If any <em class="replaceable">array-bound</em> is specified,
+there must be exactly <em class="replaceable">rank</em> of them.
+</p>
+<p>The <a class="link" href="Datum-syntax.html#meta-datum"><em class="replaceable"><code>datum</code></em></a> contains the elements in a nested-list format:
+a rank-1 array (i.e. vector) uses a single list,
+a rank-2 array uses a list-of-lists, and so on.
+The elements are in lexicographic order.
+</p>
+<p>A uniform u32 array of rank 2 with index ranges 2..3 and 3..4:
+</p>
+<pre class="screen">#2u32@2@3((1 2) (2 3))
+</pre>
+<p>Rank 0 arrays:</p>
+<pre>
+#0a sym
+#0f32 237.0
+
+</pre>
+<p>Empty arrays:</p>
+<pre>
+#2a:0:2()
+#2a:2:0(() ())
+#3a:2:0:3(() ())
+#3a:2:3:0((() () ()) (() () ()))
+</pre>
+<h2>Output (non-normative)</h2>
+<p>When an array is printed with the <code>write</code> function,
+the result <em>should</em> be an <em class="replaceable">array-literal</em>.
+(This is not possible in a pure library-based implementation,
+unless <code>write</code> is changed.)
+However, rank-1 arrays with zero lower bound <em>may</em> be
+printed as vectors. They <em>should</em> be printed as vectors
+it the implementation treats vector (and possibly uniform vector)
+as a subtype of array (i.e. all vectors are arrays), though
+an exception may be made for a specified subset of <q>non-simple</q> vectors
+(such as shared vectors).
+<p>
+Printing with <code>display</code> <em>may</em> format the array in the same way as <code>write</code> (except using <code>display</code> for each element),
+<em>or</em> in some more readable way, perhaps by
+using the <code>format-array</code> procedure.
+</p>
+<h2>The format-array utility procedure (non-normative)</h2>
+<p class="synopsis" kind="Procedure"><span class="kind">Procedure</span><span class="ignore">: </span><a class="indexterm" name="idm45251523817328"></a> <code class="function">format-array</code> <em class="replaceable"><code>value</code></em> [<em class="replaceable"><code>element-format</code></em>]</p>
+<div class="blockquote"><blockquote class="blockquote">
+<p>Produce a nice “pretty” display for <em class="replaceable"><code>value</code></em>, which is usually an array.
+It uses Unicode "box drawing" characters.
+</p>
+<p>The top line includes an <code class="literal">array-literal-header</code>.
+The lower bound are only printed if non-zero.
+The dimension lengths are printed if there is room, or if one of them is zero.
+</p>
+<pre class="screen"><strong class="userinput"><code>#2a@1:2@1:3((#2a((1 2) (3 4)) 9 #2a((3 4) (5 6)))
+            (#(42 43) #2a((8 7 6)) #2a((90 91) (100 101))))</code></strong> &#x21e8;
+╔#2a@1:2@1:3════╤═════════╗
+║#2a═╗  │      9│#2a═╗    ║
+║║1│2║  │       │║3│4║    ║
+║╟─┼─╢  │       │╟─┼─╢    ║
+║║3│4║  │       │║5│6║    ║
+║╚═╧═╝  │       │╚═╧═╝    ║
+╟───────┼───────┼─────────╢
+║╔#1a:2╗│#2a:1:3│╔#2a:2:2╗║
+║║42│43║│║8│7│6║│║ 90│ 91║║
+║╚══╧══╝│╚═╧═╧═╝│╟───┼───╢║
+║       │       │║100│101║║
+║       │       │╚═══╧═══╝║
+╚═══════╧═══════╧═════════╝
+</pre>
+<p>If <em class="replaceable"><code>element-format</code></em> is specified, it is a format string used
+for format each non-array:
+</p>
+<pre class="screen"><strong class="userinput"><code>(format-array arr "~4,2f")</code></strong> &#x21e8;
+╔#2a@1:2@1:3══╤════════════════╤═══════════════╗
+║╔#2a:2:2══╗  │            9.00│╔#2a:2:2══╗    ║
+║║1.00│2.00║  │                │║3.00│4.00║    ║
+║╟────┼────╢  │                │╟────┼────╢    ║
+║║3.00│4.00║  │                │║5.00│6.00║    ║
+║╚════╧════╝  │                │╚════╧════╝    ║
+╟─────────────┼────────────────┼───────────────╢
+║╔#1a:2╤═════╗│╔#2a:1:3══╤════╗│╔#2a:2:2══════╗║
+║║42.00│43.00║│║8.00│7.00│6.00║│║ 90.00│ 91.00║║
+║╚═════╧═════╝│╚════╧════╧════╝│╟──────┼──────╢║
+║             │                │║100.00│101.00║║
+║             │                │╚══════╧══════╝║
+╚═════════════╧════════════════╧═══════════════╝
+</pre>
+<p>If the rank is more than 2, then each “layer”
+is printed separated by double lines.
+</p>
+<pre class="screen"><strong class="userinput"><code>#3a(((1 2 3 4) (5 6 7 8))
+    ((9 10 11 12) (13 14 15 16))
+    ((17 18 19 20) (21 22 23 24)))</code></strong> &#x21e8;
+╔#3a:3:2:4══╗
+║ 1│ 2│ 3│ 4║
+╟──┼──┼──┼──╢
+║ 5│ 6│ 7│ 8║
+╠══╪══╪══╪══╣
+║ 9│10│11│12║
+╟──┼──┼──┼──╢
+║13│14│15│16║
+╠══╪══╪══╪══╣
+║17│18│19│20║
+╟──┼──┼──┼──╢
+║21│22│23│24║
+╚══╧══╧══╧══╝
+</pre>
+</blockquote></div>
+
+<h1>Implementation</h1>
+<p>This syntax is implemented in Guile (except for the handling of
+rank-0 arrays), and Kawa.</p>
+<p>Kawa provides <code>format-array</code> (though it is
+  implemented in Java): The <code>format-array</code> is a Scheme
+wrapper around the <code>print</code> method of the <code>gnu.kawa.functions.ArrayPrint</code> class.</p>
+
+<h1>Acknowledgements</h1>
+
+<h1>Copyright</h1>
+<p>
+Copyright (C) Per Bothner 2018</p>
+<p>
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:</p>
+<p>
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.</p>
+<p>
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+<hr>
+<address>Author: <a href="mailto:per@bothner.com">Per Bothner</a></address>
