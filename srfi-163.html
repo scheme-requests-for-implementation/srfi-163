@@ -14,8 +14,8 @@
   h3 { color: blue }
   /* So var inside pre gets same font as var in paragraphs. */
   var { font-family: monospace; }
-  em.non-terminal { }
-  em.non-termina-def { }
+  var.non-terminal { }
+  var.non-terminal-def { }
   code.literal { font-style: normal; }
   code.literal:before { content: "“" }
   code.literal:after { content: "”" }
@@ -49,7 +49,8 @@ for multi-dimensional arrays.
 It is an extension of the Common Lisp array reader syntax to handle
 non-zero lower bounds, optional explicit bounds,
 and optional uniform element types (compatible with <a href="https://srfi.schemers.org/srfi-4">SRFI 4</a>).
-It can be used in conjunction with <a href="https://srfi.schemers.org/srfi-25">SRFI 25</a> or <a href="https://srfi.schemers.org/srfi-122">SRFI 122</a>.
+It can be used in conjunction with <a href="https://srfi.schemers.org/srfi-25">SRFI 25</a>, <a href="https://srfi.schemers.org/srfi-122">SRFI 122</a>,
+or  <a href="https://srfi.schemers.org/srfi-164">SRFI 164</a>.
 These extensions were implemented in Guile (except the handling of rank-0 arrays),
 and later in Kawa.
 
@@ -105,26 +106,26 @@ helper function below):
 ║21│22│23║
 ╚══╧══╧══╝
 </pre>
-<div class="literallayout"><p><a class="indexterm" name="idm45251523844304"></a><a name="meta-array-literal"></a><em class="replaceable"><code>array-literal</code></em> <code>::=</code> <a class="link" href="Arrays.html#meta-array-literal-header"><em class="replaceable"><code>array-literal-header</code></em></a> <a class="link" href="Datum-syntax.html#meta-datum"><em class="replaceable"><code>datum</code></em></a><br>
-<a class="indexterm" name="idm45251523840672"></a><a name="meta-array-literal-header"></a><em class="replaceable"><code>array-literal-header</code></em> <code>::=</code> <code class="literal"><span class="bold"><strong>#</strong></span></code> <em class="replaceable"><code>rank</code></em> <a class="link" href="Arrays.html#meta-vectag"><em class="replaceable"><code>vectag</code></em></a> <a class="link" href="Arrays.html#meta-array-bound"><em class="replaceable"><code>array-bound</code></em></a><sup>*</sup> <br>
-<a class="indexterm" name="idm45251523835584"></a><a name="meta-array-bound"></a><em class="replaceable"><code>array-bound</code></em> <code>::=</code> [<code class="literal"><span class="bold"><strong>@</strong></span></code><em class="replaceable"><code>lower</code></em>]<code class="literal"><span class="bold"><strong>:</strong></span></code><em class="replaceable"><code>length</code></em> | <code class="literal"><span class="bold"><strong>@</strong></span></code><em class="replaceable"><code>lower</code></em><br>
-<a class="indexterm" name="idm45251523830384"></a><a name="meta-vectag"></a><em class="replaceable"><code>vectag</code></em> <code>::=</code> <code class="literal"><span class="bold"><strong>a</strong></span></code> | <a class="link" href="Uniform-vectors.html#meta-uniform-tag"><em class="replaceable"><code>uniform-tag</code></em></a><br>
+<div class="literallayout"><p id="meta-array-literal"><var class="non-terminal-def">array-literal</var> <code>::=</code> <var class="non-terminal">array-literal-header</var> <var class="non-terminal">datum</var><br>
+<var class="non-terminal-def">array-literal-header</var> <code>::=</code> <code class="literal"><span class="bold"><strong>#</strong></span></code> <var class="non-terminal">rank</var> <var class="non-terminal">vectag</var> <var class="non-terminal">array-bound</var><sup>*</sup> <br>
+<span id="meta-array-bound"><var class="non-terminal-def">array-bound</var> <code>::=</code> [<code class="literal"><span class="bold"><strong>@</strong></span></code><var class="non-terminal">lower</var>]<code class="literal"><span class="bold"><strong>:</strong></span></code><var class="non-terminal">length</var> | <code class="literal"><span class="bold"><strong>@</strong></span></code><var class="non-terminal">lower</var></span><br>
+<span id="meta-vectag"><var class="non-terminal-def">vectag</var> <code>::=</code> <code class="literal"><span class="bold"><strong>a</strong></span></code> | <var class="non-terminal">uniform-tag</var></span><br>
 </p></div>
-<p>The <em class="replaceable"><code>vectag</code></em> specifies the type of the elements of the array.
+<p>The <var class="non-terminal">vectag></var> specifies the type of the elements of the array.
 These are the same tags as <a href="https://srfi.schemers.org/srfi-4/srfi-4.html">SRFI 4</a>.  For example <code>#2u32((10 11) (20 21))</code>
 is a 2x2 array of 32-bit unsigned integers.
 </p>
-<p>Following the <em class="replaceable"><code>vectag</code></em> you can optionally include information
+<p>Following the <var class="non-terminal">vectag</var> you can optionally include information
 about the shape: For each dimension you can optionally specify
 the lower bounds (after the character <code class="literal">@</code>),
 followed by the length of the dimension (after the character <code class="literal">":"</code>).
 The shape information is required if a lower bound is non-zero,
 or any length is zero.
-If any <em class="replaceable">array-bound</em> is specified,
-there must be exactly <em class="replaceable">rank</em> of them.
+If any <var class="replaceable">array-bound</var> is specified,
+there must be exactly <var class="replaceable">rank</var> of them.
 </p>
-<p>The <a class="link" href="Datum-syntax.html#meta-datum"><em class="replaceable"><code>datum</code></em></a> contains the elements in a nested-list format:
-a rank-1 array (i.e. vector) uses a single list,
+<p>The <var class="non-terminal">datum</var> contains the elements in a nested-list format:
+a rank-1 array uses a single list,
 a rank-2 array uses a list of lists, and so on.
 The elements are in lexicographic order.
 </p>
@@ -162,7 +163,7 @@ Printing with <code>display</code> <em>may</em> format the array in the same way
 using the <code>format-array</code> procedure.
 </p>
 <h2>The format-array utility procedure (non-normative)</h2>
-<p class="synopsis" kind="Procedure"><span class="kind">Procedure</span><span class="ignore">: </span><a class="indexterm" name="idm45251523817328"></a> <code class="function">format-array</code> <em class="replaceable"><code>value</code></em> [<em class="replaceable"><code>element-format</code></em>]</p>
+<p class="synopsis"><span class="kind">Procedure</span><span class="ignore">: </span> <code class="function">format-array</code> <em class="replaceable"><code>value</code></em> [<em class="replaceable"><code>element-format</code></em>]</p>
 <div class="blockquote"><blockquote class="blockquote">
 <p>Produce a nice “pretty” display for <em class="replaceable"><code>value</code></em>, which is usually an array.
 It uses Unicode "box drawing" characters.
