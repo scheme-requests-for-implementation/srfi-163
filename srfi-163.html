@@ -7,8 +7,9 @@
     <link href="/favicon.png" rel="icon" sizes="192x192" type="image/png" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <style type="text/css">
-  div.title h1 { font-size: small; color: blue }
+  div.title h1, div.author h1 { font-size: small; color: blue }
   div.title { font-size: xx-large; color: blue; font-weight: bold }
+  div.author { font-weight: bold; }
   h1 { font-size: x-large; color: blue }
   h2 { font-size: large; color: blue }
   h3 { color: blue }
@@ -31,8 +32,10 @@
 Enhanced Array Literals
 </div>
 
+<div class="author">
 <h1>Author</h1>
 Per Bothner
+</div>
 
 <h1>Status</h1>
 
@@ -55,6 +58,8 @@ It can be used in conjunction with <a href="https://srfi.schemers.org/srfi-25">S
 or  <a href="https://srfi.schemers.org/srfi-164">SRFI 164</a>.
 These extensions were implemented in Guile (except the handling of rank-0 arrays),
 and later in Kawa.
+<p>There is a non-normative discussing of output formatting,
+and a suggested <code>format-array</code> procedure.
 
 <h1>Issues</h1>
 <p>Should the rank be optional if the bounds are specified? It is in SRFI 58.
@@ -113,7 +118,7 @@ helper function below):
 <span id="meta-array-bound"><var class="non-terminal-def">array-bound</var> <code>::=</code> [<code class="literal"><span class="bold"><strong>@</strong></span></code><var class="non-terminal">lower</var>]<code class="literal"><span class="bold"><strong>:</strong></span></code><var class="non-terminal">length</var> | <code class="literal"><span class="bold"><strong>@</strong></span></code><var class="non-terminal">lower</var></span><br>
 <span id="meta-vectag"><var class="non-terminal-def">vectag</var> <code>::=</code> <code class="literal"><span class="bold"><strong>a</strong></span></code> | <var class="non-terminal">uniform-tag</var></span><br>
 </p></div>
-<p>The <var class="non-terminal">vectag></var> specifies the type of the elements of the array.
+<p>The <var class="non-terminal">vectag</var> specifies the type of the elements of the array.
 These are the same tags as <a href="https://srfi.schemers.org/srfi-4/srfi-4.html">SRFI 4</a>.  For example <code>#2u32((10 11) (20 21))</code>
 is a 2x2 array of 32-bit unsigned integers.
 </p>
@@ -131,6 +136,17 @@ a rank-1 array uses a single list,
 a rank-2 array uses a list of lists, and so on.
 The elements are in lexicographic order.
 </p>
+<p>
+The <var class="non-terminal">array-literal-header</var> must be
+terminated by a <var class="non-terminal">delimiter</var>.
+This is trivially the case for rank-1 and above (since the left parenthesis
+of a <var class="non-terminal">list</var> is
+a <var class="non-terminal">delimiter</var>).
+For rank-0 arrays, a single space before <var class="replaceable">datum</var>
+is recommended style, even if the <var class="replaceable">datum</var> starts
+with a <var class="non-terminal">delimiter</var>.
+(<em>Compatibility note:</em> Common Lisp does not require a space after
+<code>#0a</code>.)
 <p>A uniform u32 array of rank 2 with index ranges 2..3 and 3..4:
 </p>
 <pre class="screen">#2u32@2@3((1 2) (2 3))
@@ -139,7 +155,6 @@ The elements are in lexicographic order.
 <pre>
 #0a sym
 #0f32 237.0
-
 </pre>
 <p>Empty arrays:</p>
 <pre>
@@ -151,24 +166,32 @@ The elements are in lexicographic order.
 <h2>Output (non-normative)</h2>
 <p>When an array is printed with the <code>write</code> function,
 the result <em>should</em> be an <em class="replaceable">array-literal</em>.
-(This is not possible in a pure library-based implementation,
-unless <code>write</code> is changed.)
-However, rank-1 arrays with zero lower bound <em>may</em> be
-printed as vectors. They <em>should</em> be printed as vectors
-it the implementation treats vector (and possibly uniform vector)
-as a subtype of array (i.e. all vectors are arrays), though
-an exception may be made for a specified subset of <q>non-simple</q> vectors
-(such as shared vectors).
+For a rank-0 arrays (only), a single space <em>should</em> be printed
+before the <var class="replaceable">datum</var>.
+In an implementation where vector is a subtype of array, rank-1
+arrays with zero lower bound may be printed as vectors.
 <p>
 Printing with <code>display</code> <em>may</em> format the array in the same way as <code>write</code> (except using <code>display</code> for each element),
 <em>or</em> in some more readable way, perhaps by
 using the <code>format-array</code> procedure.
 </p>
 <h2>The format-array utility procedure (non-normative)</h2>
-<p class="synopsis"><span class="kind">Procedure</span><span class="ignore">: </span> <code class="function">format-array</code> <em class="replaceable"><code>value</code></em> [<em class="replaceable"><code>element-format</code></em>]</p>
+<p class="synopsis"><code>(<span class="proc-def">format-array</span></code> <var>value</var> [<var>port</var>] [<var>element-format</var>]<code>)</code></p>
 <div class="blockquote"><blockquote class="blockquote">
 <p>Produce a nice “pretty” display for <em class="replaceable"><code>value</code></em>, which is usually an array.
-It uses Unicode "box drawing" characters.
+Using <a href="https://unicode.org/charts/PDF/U2500.pdf">Unicode "box drawing" characters</a> is suggested but not required.
+<p>
+If <var>port</var> is an output port, the formatted output is written into
+that port.
+Otherwise, <var>port</var> must be a boolean
+(one of <code>#t</code> or <code>#f</code>).
+If the <var>port</var> is <code>#t</code>, output is to the
+<code>(current-output-port)</code>.
+If the <var>port</var> is <code>#f</code> or no <var>port</var> is specified,
+the output is returned as a string.
+If the port is specified and is <code>#t</code> or an output-port,
+the result of the <code>format-array</code> procedure is unspecified.
+(This convention matches that of <a href="https://srfi.schemers.org/srfi-48/srfi-48.html">SRFI 48</a> <code>format</code>.)
 </p>
 <p>The top line includes an <code class="literal">array-literal-header</code>.
 The lower bound are only printed if non-zero.
@@ -238,6 +261,9 @@ rank-0 arrays), and Kawa.</p>
 wrapper around the <code>print</code> method of the <code>gnu.kawa.functions.ArrayPrint</code> class.</p>
 
 <h1>Acknowledgements</h1>
+
+This specification is based on prior art, primarily
+Kawa, Guile, and Common Lisp.
 
 <h1>Copyright</h1>
 <p>
