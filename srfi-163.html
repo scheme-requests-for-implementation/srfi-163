@@ -107,11 +107,21 @@ helper function below):
 <div class="literallayout"><p id="meta-array-literal"><var class="non-terminal-def">array-literal</var> <code>::=</code> <var class="non-terminal">array-literal-header</var> <var class="non-terminal">datum</var><br>
 <var class="non-terminal-def">array-literal-header</var> <code>::=</code> <code class="literal"><span class="bold"><strong>#</strong></span></code> <var class="non-terminal">rank</var> <var class="non-terminal">vectag</var> <var class="non-terminal">array-bound</var><sup>*</sup> <br>
 <span id="meta-array-bound"><var class="non-terminal-def">array-bound</var> <code>::=</code> [<code class="literal"><span class="bold"><strong>@</strong></span></code><var class="non-terminal">lower</var>]<code class="literal"><span class="bold"><strong>:</strong></span></code><var class="non-terminal">length</var> | <code class="literal"><span class="bold"><strong>@</strong></span></code><var class="non-terminal">lower</var></span><br>
-<span id="meta-vectag"><var class="non-terminal-def">vectag</var> <code>::=</code> <code class="literal"><span class="bold"><strong>a</strong></span></code> | <var class="non-terminal">uniform-tag</var></span><br>
+<span id="meta-vectag"><var class="non-terminal-def">vectag</var> <code>::=</code> <code class="literal"><span class="bold"><strong>a</strong></span></code> | <var class="non-terminal">type-tag</var></span><br>
 </p></div>
 <p>The <var class="non-terminal">vectag</var> specifies the type of the elements of the array.
-These are the same tags as <a href="https://srfi.schemers.org/srfi-4/srfi-4.html">SRFI 4</a>.  For example <code>#2u32((10 11) (20 21))</code>
+The letter <code>a</code> means a general array where each element
+can be an arbitary Scheme <var>datum</var>.
+Alternatively, a <var>type-tag</var> can be used for arrays
+whose elements are restricted to some specific type.
+An implementation that supports the literal syntax of
+<a href="https://srfi.schemers.org/srfi-4/srfi-4.html">SRFI 4</a>
+(or its proposed update <a href="https://srfi.schemers.org/srfi-160/srfi-160.html">SRFI 160</a>)
+should allow the <var>TAG</var> from that specification as a <var>type-tag</var>.
+For example <code>#2u32((10 11) (20 21))</code>
 is a 2x2 array of 32-bit unsigned integers.
+An implementation may support other values for <var>type-tag</var>
+as long as there is no ambiguity.
 </p>
 <p>Following the <var class="non-terminal">vectag</var> you can optionally include information
 about the shape: For each dimension you can optionally specify
@@ -168,7 +178,7 @@ Then recursively <code>read</code> each element.
 <h2>Output</h2>
 <p>When an array is printed with the <code>write</code> function,
 the result <em>should</em> be an <em class="replaceable">array-literal</em>.
-For a rank-0 arrays (only), a single space <em>should</em> be printed
+For rank-0 arrays (only), a single space <em>should</em> be printed
 before the <var class="replaceable">datum</var>.
 In an implementation where vector is a subtype of array, rank-1
 arrays with zero lower bound may be printed as vectors.
@@ -195,7 +205,7 @@ If the port is specified and is <code>#t</code> or an output-port,
 the result of the <code>format-array</code> procedure is unspecified.
 (This convention matches that of <a href="https://srfi.schemers.org/srfi-48/srfi-48.html">SRFI 48</a> <code>format</code>.)
 </p>
-<p>The top line includes an <code class="literal">array-literal-header</code>.
+<p>The top line includes an <var>array-literal-header</var>.
 A lower bound is only printed if non-zero.
 The dimension lengths are printed if there is room, or if one of them is zero.
 </p>
@@ -276,7 +286,7 @@ Kawa, Guile, and Common Lisp.
 
 <h1>Copyright</h1>
 <p>
-Copyright (C) Per Bothner 2018</p>
+Copyright (C) Per Bothner 2019</p>
 <p>
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
