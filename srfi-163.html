@@ -281,6 +281,11 @@ rank-0 arrays), and Kawa.</p>
   wrapper around the <a href="https://gitlab.com/kashell/Kawa/blob/master/gnu/kawa/functions/ArrayPrint.java"><code>print</code></a>
   method of the <code>gnu.kawa.functions.ArrayPrint</code> class.</p>
 
+<p>In the Kawa implementation, there are some tests in <a href="https://gitlab.com/kashell/Kawa/blob/master/testsuite/arr-test.scm">arr-test.scm</a>.
+  However, they're not standalone or portable, as they depend on Kawa
+  functionality, including SRFI-164-style arrays and SRFI 109 (to make
+  the result strings more readable).</p>
+
 <h1>Acknowledgements</h1>
 
 This specification is based on prior art, primarily
