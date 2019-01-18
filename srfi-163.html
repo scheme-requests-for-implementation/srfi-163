@@ -112,7 +112,7 @@ helper function below):
 </p></div>
 <p>The <var class="non-terminal">vectag</var> specifies the type of the elements of the array.
 The letter <code>a</code> means a general array where each element
-can be an arbitary Scheme <var>datum</var>.
+can be an arbitrary Scheme <var>datum</var>.
 Alternatively, a <var>type-tag</var> can be used for arrays
 whose elements are restricted to some specific type.
 An implementation that supports the literal syntax of
@@ -167,10 +167,10 @@ with a <var class="non-terminal">delimiter</var>.
 </pre>
 <p><em>Possible extension:</em>
 It might make source code more readable if it could contain
-array literals in the form produced by </code>format-array</code>.
+array literals in the form produced by <code>format-array</code>.
 An implementation has not been attempted, but it seems doable:
 If the first non-whitespace character after the header is a
-box drawing character, then use those box-drawning characters to figure out
+box drawing character, then use those box-drawing characters to figure out
 each element <q>cell</q>. (Nested arrays make this a bit more complicated.)
 If a cell has multiple lines,
 convert it to a string, with a newline between each line.
