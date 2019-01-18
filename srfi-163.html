@@ -275,14 +275,18 @@ This is implemented in the Kawa reference implementation, as illustrated here:
 
 <h1>Implementation</h1>
 <p>This syntax is implemented in Guile (except for the handling of
-rank-0 arrays), and Kawa.</p>
-<p>Kawa provides <code>format-array</code> (though it is
-  implemented in Java): The <code>format-array</code> is a Scheme
-  wrapper around the <a href="https://gitlab.com/kashell/Kawa/blob/master/gnu/kawa/functions/ArrayPrint.java"><code>print</code></a>
-  method of the <code>gnu.kawa.functions.ArrayPrint</code> class.</p>
+rank-0 arrays) and Kawa.</p>
 
-<p>In the Kawa implementation, there are some tests in <a href="https://gitlab.com/kashell/Kawa/blob/master/testsuite/arr-test.scm">arr-test.scm</a>.
-  However, they're not standalone or portable, as they depend on Kawa
+<p>The Kawa implementation for the reader syntax is in
+  <a href="https://gitlab.com/kashell/Kawa/blob/master/gnu/kawa/lispexpr/LispReader.java"><code>gnu.kawa.lispexpr.LispReader</code></a>.</p>
+
+<p>Kawa also provides <code>format-array</code>, implemented as a Scheme
+  wrapper around the <code>print</code> method of the
+  <a href="https://gitlab.com/kashell/Kawa/blob/master/gnu/kawa/functions/ArrayPrint.java"><code>gnu.kawa.functions.ArrayPrint</code></a>
+  class.</p>
+
+<p>The Kawa implementation includes tests in <a href="https://gitlab.com/kashell/Kawa/blob/master/testsuite/arr-test.scm">arr-test.scm</a>.
+  They are not standalone or portable, as they depend on Kawa
   functionality, including SRFI-164-style arrays and SRFI 109 (to make
   the result strings more readable).</p>
 
