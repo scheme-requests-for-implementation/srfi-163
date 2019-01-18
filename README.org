@@ -4,7 +4,7 @@
 
 This repository hosts [[https://srfi.schemers.org/srfi-163/][SRFI 163]]: Enhanced array literals, a [[https://srfi.schemers.org/][Scheme Request for Implementation]].
 
-This SRFI is in /draft/ status.
+This SRFI is in /final/ status.
 
 See also [[https://srfi.schemers.org/srfi-4/][SRFI 4: Homogeneous numeric vector datatypes]], [[https://srfi.schemers.org/srfi-25/][SRFI 25: Multi-dimensional Array Primitives]], [[https://srfi.schemers.org/srfi-58/][SRFI 58: Array Notation]], [[https://srfi.schemers.org/srfi-122/][SRFI 122: Nonempty Intervals and Generalized Arrays]], and [[https://srfi.schemers.org/srfi-164/][SRFI 164: Enhanced multi-dimensional Arrays]].
 
