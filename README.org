@@ -6,7 +6,7 @@ This repository hosts [[https://srfi.schemers.org/srfi-163/][SRFI 163]]: Enhance
 
 This SRFI is in /final/ status.
 
-See also [[https://srfi.schemers.org/srfi-4/][SRFI 4: Homogeneous numeric vector datatypes]], [[https://srfi.schemers.org/srfi-25/][SRFI 25: Multi-dimensional Array Primitives]], [[https://srfi.schemers.org/srfi-58/][SRFI 58: Array Notation]], [[https://srfi.schemers.org/srfi-122/][SRFI 122: Nonempty Intervals and Generalized Arrays]], and [[https://srfi.schemers.org/srfi-164/][SRFI 164: Enhanced multi-dimensional Arrays]].
+See also [[https://srfi.schemers.org/srfi-4/][SRFI 4: Homogeneous numeric vector datatypes]], [[https://srfi.schemers.org/srfi-25/][SRFI 25: Multi-dimensional Array Primitives]], [[https://srfi.schemers.org/srfi-48/][SRFI 48: Intermediate Format Strings]], [[https://srfi.schemers.org/srfi-58/][SRFI 58: Array Notation]], [[https://srfi.schemers.org/srfi-58/][SRFI 58: Array Notation]], [[https://srfi.schemers.org/srfi-122/][SRFI 122: Nonempty Intervals and Generalized Arrays]], [[https://srfi.schemers.org/srfi-160/][SRFI 160: Homogeneous numeric vector libraries]], and [[https://srfi.schemers.org/srfi-164/][SRFI 164: Enhanced multi-dimensional Arrays]].
 
 The full documentation for this SRFI can be found in the [[https://srfi.schemers.org/srfi-163/srfi-163.html][SRFI Document]].
 
